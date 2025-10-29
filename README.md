@@ -1,2 +1,2 @@
-# school-kissing-nebula
-School Kissing game made with Nebula.
+# minesweeper-nebula
+Minesweeper game made with Nebula.
