@@ -25,30 +25,40 @@ function nebula.setup()
 
     Position = nebula.ecs.component("Position")
     Quad = nebula.ecs.component("Quad")
+    Color = nebula.ecs.component("Color")
     GridMatrix = nebula.ecs.component("GridMatrix", {internal_matrix = {}})
     GridCell = nebula.ecs.component("GridCell", {type = GridType.NUMERICAL})
 
-    local current_position = Position({x = 10, y = 20});
+    local mutable_position = Position({x = 6, y = 10});
     local matrix = {}
     local number_of_rows = 9;
     local number_of_columns = 9;
     local grid = nebula.ecs.spawn()
-    local score = nebula.ecs.spawn()
-    local timer = nebula.ecs.spawn()
+    --local score = nebula.ecs.spawn()
+    --local timer = nebula.ecs.spawn()
 
     for i = 1, number_of_rows do
         matrix[i] = {}
+        mutable_position.x = 6
+
+        if (i ~= 1) then
+            mutable_position.y = mutable_position.y + 55
+        end
 
         for j = 1, number_of_columns do
             local grid_cell = nebula.ecs.spawn()
-            local position = i == 1 and Position({x = 10, y = 10}) or Position({x = current_position * 2, y = 10})
+            local position = mutable_position
 
-            current_position = position
+            if (j ~= 1) then
+                position = Position({x = mutable_position.x + 56, y = mutable_position.y})
+                mutable_position.x = position.x
+            end
 
             nebula.ecs.addComponent(
                 grid_cell,
                 position,
                 Quad({width = 40, height = 40}),
+                Color({r = 0.238, g = 0.239, b = 0.237}),
                 GridCell({type = GridType.NUMERICAL})
             )
             matrix[i][j] = grid_cell
