@@ -52,7 +52,7 @@ function nebula.setup()
             local position = mutable_position
             local grid_cell_type = GridType:random()
 
-            if (number_of_mines == 10) then
+            if (number_of_mines == GameObserver.grid_tracker.available_mine_grid_cells) then
                 grid_cell_type = GridType.NUMERICAL
             end
 
@@ -85,7 +85,7 @@ function nebula.update(delta)
         local mouse_x = nebula.mouse.getX()
         local mouse_y = nebula.mouse.getY()
 
-        for entity in pairs(entities) do
+        for _, entity in pairs(entities) do
             local quad = nebula.ecs.getComponent(entity, Quad)
             local position = nebula.ecs.getComponent(entity, Position)
             local grid_cell = nebula.ecs.getComponent(entity, GridCell)
@@ -93,8 +93,8 @@ function nebula.update(delta)
             local quadrant_x = position.x + quad.width
             local quadrant_y = position.y + quad.height
 
-            local is_mouse_in_quadrant_x = mouse_x <= quadrant_x and mouse_x >= quadrant_x
-            local is_mouse_in_quadrant_y = mouse_y <= quadrant_y and mouse_y >= quadrant_y
+            local is_mouse_in_quadrant_x = mouse_x <= quadrant_x
+            local is_mouse_in_quadrant_y = mouse_y <= quadrant_y
 
             if (GridType.MINE == grid_cell.value and (is_mouse_in_quadrant_x and is_mouse_in_quadrant_y)) then
                 print("ops!! booom")
