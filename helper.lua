@@ -1,4 +1,4 @@
-function enum(input_table, is_immutable)
+function enum(input_table)
     local meta_table = {}
 
     function meta_table:random()
@@ -19,11 +19,15 @@ function enum(input_table, is_immutable)
         error("Invalid enumerator key: " .. tostring(key))
     end
 
-    if (is_immutable) then
-        meta_table.__newindex = function()
-            error("Immutable enumerator")
-        end
+    meta_table.__newindex = function()
+        error("Immutable enumerator")
     end
 
     return setmetatable(input_table, meta_table)
+end
+
+function reset_entities()
+    for _, entity in nebula.ecs.getEntitiesWith(Cell) do
+        nebula.ecs.despawn(entity)
+    end
 end

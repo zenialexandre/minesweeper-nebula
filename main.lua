@@ -1,21 +1,23 @@
 math.randomseed(os.time())
+
 require "helper"
 require "grid"
+require "event"
 
 _G.GameObserver = {
     state = {
-        paused = false,
         ended = false
     },
     grid_tracker = {
+        matrix = {},
         available_grid_cells = 81,
-        available_blank_grid_cells = 10,
+        available_blank_grid_cells = 15,
         available_numerical_grid_cells = 61,
-        available_mine_grid_cells = 10
+        available_mine_grid_cells = 20
     }
 }
 
-_G.GridType = enum {
+_G.CellType = enum {
     BLANK = 1,
     NUMERICAL = 2,
     MINE = 3
@@ -28,63 +30,37 @@ function nebula.setup()
 
     Sprite = nebula.ecs.component("Sprite")
     Position = nebula.ecs.component("Position")
+    Cell = nebula.ecs.component("Cell", {type = CellType.NUMERICAL, is_available = false, row_index = 0, column_index = 0})
+
+    CellTexture = nebula.graphics.newTexture("resources/textures/grid_cell.png")
     BlankCellTexture = nebula.graphics.newTexture("resources/textures/blank_cell.png")
     MineCellTexture = nebula.graphics.newTexture("resources/textures/mine_cell.png")
-    GridMatrix = nebula.ecs.component("GridMatrix", {value = {}})
-    GridCell = nebula.ecs.component("GridCell", {value = GridType.NUMERICAL})
+    NumericalOneCellTexture = nebula.graphics.newTexture("resources/textures/numerical_one_cell.png")
+    NumericalTwoCellTexture = nebula.graphics.newTexture("resources/textures/numerical_two_cell.png")
+    NumericalThreeCellTexture = nebula.graphics.newTexture("resources/textures/numerical_three_cell.png")
+    NumericalFourCellTexture = nebula.graphics.newTexture("resources/textures/numerical_four_cell.png")
+    NumericalFiveCellTexture = nebula.graphics.newTexture("resources/textures/numerical_five_cell.png")
+    NumericalSixCellTexture = nebula.graphics.newTexture("resources/textures/numerical_six_cell.png")
+    NumericalSevenCellTexture = nebula.graphics.newTexture("resources/textures/numerical_seven_cell.png")
+    NumericalEightCellTexture = nebula.graphics.newTexture("resources/textures/numerical_eight_cell.png")
 
-    local matrix = {}
-    local grid = nebula.ecs.spawn()
-    --local score = nebula.ecs.spawn()
-    --local timer = nebula.ecs.spawn()
+    NumericalTextures = {
+        [1] = NumericalOneCellTexture,
+        [2] = NumericalTwoCellTexture,
+        [3] = NumericalThreeCellTexture,
+        [4] = NumericalFourCellTexture,
+        [5] = NumericalFiveCellTexture,
+        [6] = NumericalSixCellTexture,
+        [7] = NumericalSevenCellTexture,
+        [8] = NumericalEightCellTexture
+    }
 
-    build(matrix)
-    nebula.ecs.addComponent(grid, GridMatrix({value = matrix}))
+    build()
 end
 
 function nebula.update(delta)
-    if (nebula.mouse.isPressed("left")) then
-        local entities = nebula.ecs.getEntitiesWith(GridCell)
-        local mouse_x = nebula.mouse.getX()
-        local mouse_y = nebula.mouse.getY()
-
-        for _, entity in pairs(entities) do
-            local sprite = nebula.ecs.getComponent(entity, Sprite)
-            local position = nebula.ecs.getComponent(entity, Position)
-            local grid_cell = nebula.ecs.getComponent(entity, GridCell)
-
-            local quadrant_x = position.x + sprite.texture.width
-            local quadrant_y = position.y + sprite.texture.height
-
-            local is_mouse_in_quadrant_x = mouse_x >= position.x and mouse_x < quadrant_x
-            local is_mouse_in_quadrant_y = mouse_y >= position.y and mouse_y < quadrant_y
-
-            if (is_mouse_in_quadrant_x and is_mouse_in_quadrant_y) then
-                if (GridType.BLANK == grid_cell.value) then
-                    sprite.texture = BlankCellTexture
-                elseif (GridType.NUMERICAL == grid_cell.value) then
-                    -- blaa
-                else
-                    GameObserver.state.ended = true
-                end
-            end
-        end
-    end
-
-    if (GameObserver.state.ended) then
-        for _, entity in pairs(nebula.ecs.getEntitiesWith(GridCell)) do
-            local grid_cell = nebula.ecs.getComponent(entity, GridCell)
-            local sprite = nebula.ecs.getComponent(entity, Sprite)
-
-            if (GridType.BLANK == grid_cell.value) then
-                sprite.texture = BlankCellTexture
-            elseif (GridType.NUMERICAL == grid_cell.value) then
-                -- blaa
-            else
-                sprite.texture = MineCellTexture
-            end
-        end
-    end
+    handle_mouse_click()
+    handle_game_ended()
 end
 
 function nebula.draw()

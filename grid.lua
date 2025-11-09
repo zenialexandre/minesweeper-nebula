@@ -1,5 +1,4 @@
-function build(matrix)
-    local grid_cell_texture = nebula.graphics.newTexture("resources/textures/grid_cell.png")
+function build()
     local mutable_position = Position({x = 6, y = 10})
     local number_of_blanks = 0
     local number_of_mines = 0
@@ -7,7 +6,7 @@ function build(matrix)
     local number_of_columns = 9
 
     for i = 1, number_of_rows do
-        matrix[i] = {}
+        GameObserver.grid_tracker.matrix[i] = {}
         mutable_position.x = 6
 
         if (i ~= 1) then
@@ -15,15 +14,15 @@ function build(matrix)
         end
 
         for j = 1, number_of_columns do
-            local grid_cell = nebula.ecs.spawn()
+            local cell = nebula.ecs.spawn()
             local position = mutable_position
-            local grid_cell_type = GridType:random()
+            local cell_type = CellType:random()
 
-            if (number_of_mines == GameObserver.grid_tracker.available_mine_grid_cells) then grid_cell_type = GridType.NUMERICAL end
-            if (number_of_blanks == GameObserver.grid_tracker.available_blank_grid_cells) then grid_cell_type = GridType.NUMERICAL end
+            if (CellType.MINE == cell_type and number_of_mines == GameObserver.grid_tracker.available_mine_grid_cells) then cell_type = CellType.NUMERICAL end
+            if (CellType.BLANK == cell_type and number_of_blanks == GameObserver.grid_tracker.available_blank_grid_cells) then cell_type = CellType.NUMERICAL end
 
-            if (GridType.BLANK == grid_cell_type) then number_of_blanks = number_of_blanks + 1 end
-            if (GridType.MINE == grid_cell_type) then number_of_mines = number_of_mines + 1 end
+            if (CellType.BLANK == cell_type) then number_of_blanks = number_of_blanks + 1 end
+            if (CellType.MINE == cell_type) then number_of_mines = number_of_mines + 1 end
 
             if (j ~= 1) then
                 position = Position({x = mutable_position.x + 56, y = mutable_position.y})
@@ -31,12 +30,68 @@ function build(matrix)
             end
 
             nebula.ecs.addComponent(
-                grid_cell,
+                cell,
                 position,
-                Sprite({texture = grid_cell_texture}),
-                GridCell({value = grid_cell_type})
+                Sprite({texture = CellTexture}),
+                Cell({type = cell_type, is_available = true, row_index = i, column_index = j})
             )
-            matrix[i][j] = grid_cell
+            GameObserver.grid_tracker.matrix[i][j] = cell
         end
     end
+end
+
+function get_surrounding_cells(row_index, column_index)
+    local surrounding_cells = {}
+    local directions = {
+        {-1, -1}, {-1, 0}, {-1, 1},
+        {0, -1},           {0, 1},
+        {1, -1},  {1, 0},  {1, 1}
+    }
+
+    for _, direction in ipairs(directions) do
+        local i = row_index + direction[1] -- Index starts at 1
+        local j = column_index + direction[2]
+
+        if (GameObserver.grid_tracker.matrix[i] and GameObserver.grid_tracker.matrix[i][j]) then -- Preventing nil rows and columns
+            table.insert(surrounding_cells, GameObserver.grid_tracker.matrix[i][j])
+        end
+    end
+
+    return surrounding_cells
+end
+
+function reveal_surrounding_cells(row_index, column_index)
+    local surrounding_cells = get_surrounding_cells(row_index, column_index)
+
+    for _, entity in pairs(surrounding_cells) do
+        local cell = nebula.ecs.getComponent(entity, Cell)
+        local sprite = nebula.ecs.getComponent(entity, Sprite)
+
+        if (cell.is_available) then
+            cell.is_available = false
+
+            if (CellType.BLANK == cell.type) then
+                sprite.texture = BlankCellTexture
+            elseif (CellType.NUMERICAL == cell.type) then
+                numerical_sprite(sprite, cell.row_index, cell.column_index)
+            else
+                sprite.texture = MineCellTexture
+            end
+        end
+    end
+end
+
+function numerical_sprite(cell_sprite, row_index, column_index)
+    local number_of_surrounding_mines = 0
+    local surrounding_cells = get_surrounding_cells(row_index, column_index)
+
+    for _, entity in pairs(surrounding_cells) do
+        local cell = nebula.ecs.getComponent(entity, Cell)
+
+        if (CellType.MINE == cell.type) then
+            number_of_surrounding_mines = number_of_surrounding_mines + 1
+        end
+    end
+
+    cell_sprite.texture = NumericalTextures[number_of_surrounding_mines] or BlankCellTexture
 end
