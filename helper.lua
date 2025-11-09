@@ -1,4 +1,6 @@
-function enum(input_table)
+local helper = {}
+
+function helper:enum(input_table)
     local meta_table = {}
 
     function meta_table:random()
@@ -26,8 +28,10 @@ function enum(input_table)
     return setmetatable(input_table, meta_table)
 end
 
-function reset_entities()
+function helper:reset_entities()
     for _, entity in nebula.ecs.getEntitiesWith(Cell) do
         nebula.ecs.despawn(entity)
     end
 end
+
+return helper

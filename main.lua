@@ -1,8 +1,8 @@
 math.randomseed(os.time())
 
-require "helper"
-require "grid"
-require "event"
+_G.helper = require("helper")
+_G.grid = require("grid")
+_G.event = require("event")
 
 _G.GameObserver = {
     state = {
@@ -17,7 +17,7 @@ _G.GameObserver = {
     }
 }
 
-_G.CellType = enum {
+_G.CellType = helper:enum {
     BLANK = 1,
     NUMERICAL = 2,
     MINE = 3
@@ -55,12 +55,12 @@ function nebula.setup()
         [8] = NumericalEightCellTexture
     }
 
-    build()
+    grid:build()
 end
 
 function nebula.update(delta)
-    handle_mouse_click()
-    handle_game_ended()
+    event:handle_mouse_click()
+    event:handle_game_ended()
 end
 
 function nebula.draw()

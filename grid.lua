@@ -1,4 +1,6 @@
-function build()
+local grid = {}
+
+function grid:build()
     local mutable_position = Position({x = 6, y = 10})
     local number_of_blanks = 0
     local number_of_mines = 0
@@ -40,7 +42,7 @@ function build()
     end
 end
 
-function get_surrounding_cells(row_index, column_index)
+function grid:get_surrounding_cells(row_index, column_index)
     local surrounding_cells = {}
     local directions = {
         {-1, -1}, {-1, 0}, {-1, 1},
@@ -60,8 +62,8 @@ function get_surrounding_cells(row_index, column_index)
     return surrounding_cells
 end
 
-function reveal_surrounding_cells(row_index, column_index)
-    local surrounding_cells = get_surrounding_cells(row_index, column_index)
+function grid:reveal_surrounding_cells(row_index, column_index)
+    local surrounding_cells = self:get_surrounding_cells(row_index, column_index)
 
     for _, entity in pairs(surrounding_cells) do
         local cell = nebula.ecs.getComponent(entity, Cell)
@@ -73,7 +75,7 @@ function reveal_surrounding_cells(row_index, column_index)
             if (CellType.BLANK == cell.type) then
                 sprite.texture = BlankCellTexture
             elseif (CellType.NUMERICAL == cell.type) then
-                numerical_sprite(sprite, cell.row_index, cell.column_index)
+                grid.numerical_sprite(sprite, cell.row_index, cell.column_index)
             else
                 sprite.texture = MineCellTexture
             end
@@ -81,9 +83,9 @@ function reveal_surrounding_cells(row_index, column_index)
     end
 end
 
-function numerical_sprite(cell_sprite, row_index, column_index)
+function grid:numerical_sprite(cell_sprite, row_index, column_index)
     local number_of_surrounding_mines = 0
-    local surrounding_cells = get_surrounding_cells(row_index, column_index)
+    local surrounding_cells = self:get_surrounding_cells(row_index, column_index)
 
     for _, entity in pairs(surrounding_cells) do
         local cell = nebula.ecs.getComponent(entity, Cell)
@@ -95,3 +97,5 @@ function numerical_sprite(cell_sprite, row_index, column_index)
 
     cell_sprite.texture = NumericalTextures[number_of_surrounding_mines] or BlankCellTexture
 end
+
+return grid
