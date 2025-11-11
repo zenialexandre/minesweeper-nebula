@@ -1,18 +1,23 @@
 math.randomseed(os.time())
 
 _G.helper = require("helper")
+_G.menu = require("menu")
 _G.grid = require("grid")
 _G.event = require("event")
 
 _G.GameObserver = {
     state = {
+        started = false,
+        paused = false,
         ended = false
+    },
+    menu_tracker = {
+        fading_text = false
     },
     grid_tracker = {
         matrix = {},
         available_grid_cells = 81,
         available_blank_grid_cells = 15,
-        available_numerical_grid_cells = 61,
         available_mine_grid_cells = 20
     }
 }
@@ -24,10 +29,13 @@ _G.CellType = helper:enum {
 }
 
 function nebula.setup()
+    nebula.graphics.setBackground(0.0, 0.0, 0.0)
     nebula.window.setTitle("Minesweeper")
     nebula.window.setSize(500, 500)
     nebula.window.setIcon("resources/textures/icon/yeah.jpg")
 
+    Color = nebula.ecs.component("Color")
+    Text = nebula.ecs.component("Text")
     Sprite = nebula.ecs.component("Sprite")
     Position = nebula.ecs.component("Position")
     Cell = nebula.ecs.component("Cell", {type = CellType.NUMERICAL, is_available = false, row_index = 0, column_index = 0})
@@ -55,10 +63,12 @@ function nebula.setup()
         [8] = NumericalEightCellTexture
     }
 
-    grid:build()
+    menu:started()
 end
 
 function nebula.update(delta)
+    event:handle_player_start(delta)
+    event:handle_game_started()
     event:handle_mouse_click()
     event:handle_game_ended()
 end

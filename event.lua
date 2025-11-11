@@ -1,5 +1,38 @@
 local event = {}
 
+function event:handle_player_start(delta)
+    if (nebula.keyboard.isKeyPressed("enter") or GameObserver.menu_tracker.fading_text) then
+        local fade_speed = 15.0
+        GameObserver.menu_tracker.fading_text = true
+
+        for _, entity in pairs(nebula.ecs.getEntitiesWith(Text)) do
+            local color = nebula.ecs.getComponent(entity, Color)
+            color.r = color.r - fade_speed * delta
+            color.g = color.g - fade_speed * delta
+            color.b = color.b - fade_speed * delta
+
+            print("delta " .. delta)
+            print("r " .. color.r)
+            print("g " .. color.g)
+            print("b " .. color.b)
+
+            if (color.r <= 0.0 and color.g <= 0.0 and color.b <= 0.0) then
+                GameObserver.menu_tracker.fading_text = false
+            end
+        end
+    end
+end
+
+function event:handle_game_started()
+    if (GameObserver.state.started) then
+        for _, entity in pairs(nebula.ecs.getEntitiesWith(Text)) do
+            nebula.ecs.despawn(entity)
+        end
+
+        grid:build()
+    end
+end
+
 function event:handle_mouse_click()
     if (nebula.mouse.isPressed("left")) then
         local entities = nebula.ecs.getEntitiesWith(Cell)
