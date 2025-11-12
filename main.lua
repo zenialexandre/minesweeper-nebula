@@ -1,6 +1,7 @@
 math.randomseed(os.time())
 
 _G.helper = require("helper")
+_G.fx = require("fx")
 _G.menu = require("menu")
 _G.grid = require("grid")
 _G.event = require("event")
@@ -8,6 +9,7 @@ _G.event = require("event")
 _G.GameObserver = {
     state = {
         started = false,
+        running = false,
         paused = false,
         ended = false
     },
@@ -64,13 +66,14 @@ function nebula.setup()
     }
 
     menu:started()
+    grid:build()
 end
 
 function nebula.update(delta)
-    event:handle_player_start(delta)
-    event:handle_game_started()
-    event:handle_mouse_click()
-    event:handle_game_ended()
+    event:player_start(delta)
+    event:game_started(delta)
+    event:mouse_click()
+    event:game_ended()
 end
 
 function nebula.draw()

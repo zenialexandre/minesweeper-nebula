@@ -35,6 +35,7 @@ function grid:build()
                 cell,
                 position,
                 Sprite({texture = CellTexture}),
+                Color({r = 1.0, g = 1.0, b = 1.0, a = 0.0}),
                 Cell({type = cell_type, is_available = true, row_index = i, column_index = j})
             )
             GameObserver.grid_tracker.matrix[i][j] = cell
@@ -63,7 +64,7 @@ function grid:get_surrounding_cells(row_index, column_index)
 end
 
 function grid:reveal_surrounding_cells(row_index, column_index)
-    local surrounding_cells = self:get_surrounding_cells(row_index, column_index)
+    local surrounding_cells = grid:get_surrounding_cells(row_index, column_index)
 
     for _, entity in pairs(surrounding_cells) do
         local cell = nebula.ecs.getComponent(entity, Cell)
@@ -85,7 +86,7 @@ end
 
 function grid:numerical_sprite(cell_sprite, row_index, column_index)
     local number_of_surrounding_mines = 0
-    local surrounding_cells = self:get_surrounding_cells(row_index, column_index)
+    local surrounding_cells = grid:get_surrounding_cells(row_index, column_index)
 
     for _, entity in pairs(surrounding_cells) do
         local cell = nebula.ecs.getComponent(entity, Cell)

@@ -1,45 +1,38 @@
 local event = {}
 
-function event:handle_player_start(delta)
-    if (nebula.keyboard.isKeyPressed("enter") or GameObserver.menu_tracker.fading_text) then
-        local fade_speed = 15.0
+function event:player_start(delta)
+    if ((nebula.keyboard.isKeyPressed("enter") or GameObserver.menu_tracker.fading_text) and not GameObserver.state.running) then
+        local fade_speed = 0.5
+        local entities = nebula.ecs.getEntitiesWith(Text)
         GameObserver.menu_tracker.fading_text = true
 
-        for _, entity in pairs(nebula.ecs.getEntitiesWith(Text)) do
-            local color = nebula.ecs.getComponent(entity, Color)
-            color.r = color.r - fade_speed * delta
-            color.g = color.g - fade_speed * delta
-            color.b = color.b - fade_speed * delta
-
-            print("delta " .. delta)
-            print("r " .. color.r)
-            print("g " .. color.g)
-            print("b " .. color.b)
-
-            if (color.r <= 0.0 and color.g <= 0.0 and color.b <= 0.0) then
-                GameObserver.menu_tracker.fading_text = false
-            end
+        if (fx:fade_out(entities, delta, fade_speed)) then
+            GameObserver.menu_tracker.fading_text = false
+            GameObserver.state.started = true
         end
     end
 end
 
-function event:handle_game_started()
-    if (GameObserver.state.started) then
+function event:game_started(delta)
+    if (GameObserver.state.started and not GameObserver.state.running) then
+        local fade_speed = 0.5
+
         for _, entity in pairs(nebula.ecs.getEntitiesWith(Text)) do
             nebula.ecs.despawn(entity)
         end
-
-        grid:build()
+        
+        if (fx:fade_in(nebula.ecs.getEntitiesWith(Cell), delta, fade_speed)) then
+            GameObserver.state.running = true
+        end
     end
 end
 
-function event:handle_mouse_click()
-    if (nebula.mouse.isPressed("left")) then
-        local entities = nebula.ecs.getEntitiesWith(Cell)
+function event:mouse_click()
+    if (nebula.mouse.isPressed("left") and GameObserver.state.running) then
         local mouse_x = nebula.mouse.getX()
         local mouse_y = nebula.mouse.getY()
 
-        for _, entity in pairs(entities) do
+        for _, entity in pairs(nebula.ecs.getEntitiesWith(Cell)) do
             local sprite = nebula.ecs.getComponent(entity, Sprite)
             local position = nebula.ecs.getComponent(entity, Position)
             local cell = nebula.ecs.getComponent(entity, Cell)
@@ -66,7 +59,7 @@ function event:handle_mouse_click()
     end
 end
 
-function event:handle_game_ended()
+function event:game_ended()
     if (GameObserver.state.ended) then
         for _, entity in pairs(nebula.ecs.getEntitiesWith(Cell)) do
             local cell = nebula.ecs.getComponent(entity, Cell)
