@@ -8,7 +8,7 @@ function event:player_start(delta)
         fx:set_fading_state(entities, true)
 
         if (fx:fade_out(entities, delta, fade_speed)) then
-            fx:set_fading_state(entities, true)
+            fx:set_fading_state(entities, false)
             GameObserver.state.started = true
         end
     end
