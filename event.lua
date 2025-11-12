@@ -1,13 +1,14 @@
 local event = {}
 
 function event:player_start(delta)
-    if ((nebula.keyboard.isKeyPressed("enter") or GameObserver.menu_tracker.fading_text) and not GameObserver.state.running) then
+    local entities = nebula.ecs.getEntitiesWith(Text)
+
+    if ((nebula.keyboard.isKeyPressed("enter") or fx:is_any_fading(entities)) and not GameObserver.state.running) then
         local fade_speed = 0.5
-        local entities = nebula.ecs.getEntitiesWith(Text)
-        GameObserver.menu_tracker.fading_text = true
+        fx:set_fading_state(entities, true)
 
         if (fx:fade_out(entities, delta, fade_speed)) then
-            GameObserver.menu_tracker.fading_text = false
+            fx:set_fading_state(entities, true)
             GameObserver.state.started = true
         end
     end
@@ -73,6 +74,8 @@ function event:game_ended()
                 sprite.texture = MineCellTexture
             end
         end
+
+        GameObserver.state.ended = false
     end
 end
 

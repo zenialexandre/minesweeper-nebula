@@ -76,7 +76,7 @@ function grid:reveal_surrounding_cells(row_index, column_index)
             if (CellType.BLANK == cell.type) then
                 sprite.texture = BlankCellTexture
             elseif (CellType.NUMERICAL == cell.type) then
-                grid.numerical_sprite(sprite, cell.row_index, cell.column_index)
+                grid:numerical_sprite(sprite, cell.row_index, cell.column_index)
             else
                 sprite.texture = MineCellTexture
             end

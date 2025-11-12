@@ -26,4 +26,23 @@ function fx:fade_in(entities, delta, fade_speed)
     return false
 end
 
+function fx:set_fading_state(entities, is_active)
+    for _, entity in pairs(entities) do
+        local fade = nebula.ecs.getComponent(entity, Fade)
+        fade.is_active = is_active
+    end
+end
+
+function fx:is_any_fading(entities)
+    for _, entity in pairs(entities) do
+        local fade = nebula.ecs.getComponent(entity, Fade)
+
+        if (fade.is_active) then
+            return true
+        end
+    end
+
+    return false
+end
+
 return fx

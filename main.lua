@@ -13,9 +13,6 @@ _G.GameObserver = {
         paused = false,
         ended = false
     },
-    menu_tracker = {
-        fading_text = false
-    },
     grid_tracker = {
         matrix = {},
         available_grid_cells = 81,
@@ -36,6 +33,7 @@ function nebula.setup()
     nebula.window.setSize(500, 500)
     nebula.window.setIcon("resources/textures/icon/yeah.jpg")
 
+    Fade = nebula.ecs.component("Fade", {is_active = false})
     Color = nebula.ecs.component("Color")
     Text = nebula.ecs.component("Text")
     Sprite = nebula.ecs.component("Sprite")
