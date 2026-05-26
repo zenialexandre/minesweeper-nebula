@@ -20,12 +20,17 @@ function event:game_started(delta)
         local entities = nebula.ecs.getEntitiesWith(Cell)
         local icon_entities = nebula.ecs.getEntitiesWith(Icon)
         local timer_entities = nebula.ecs.getEntitiesWith(Timer)
+        local cell_counter_entities = nebula.ecs.getEntitiesWith(CellCounter)
 
         for _, entity in pairs(icon_entities) do
             table.insert(entities, entity)
         end
 
         for _, entity in pairs(timer_entities) do
+            table.insert(entities, entity)
+        end
+
+        for _, entity in pairs(cell_counter_entities) do
             table.insert(entities, entity)
         end
 
@@ -62,6 +67,7 @@ function event:mouse_click()
                 end
 
                 cell.is_available = false
+                GameObserver.grid_tracker.available_grid_cells = GameObserver.grid_tracker.available_grid_cells - 1
 
                 if (CellType.BLANK == cell.type) then
                     sprite.texture = BlankCellTexture
@@ -119,13 +125,15 @@ function event:game_ended()
                 sprite.texture = MineCellTexture
 
                 if (
-                    cell.row_index == GameObserver.grid_tracker.end_game_mine_cell_row_index and
-                    cell.column_index == GameObserver.grid_tracker.end_game_mine_cell_column_index
-                ) then
+                        cell.row_index == GameObserver.grid_tracker.end_game_mine_cell_row_index and
+                        cell.column_index == GameObserver.grid_tracker.end_game_mine_cell_column_index
+                    ) then
                     sprite.texture = MineRedCellTexture
                 end
             end
         end
+
+        GameObserver.grid_tracker.available_grid_cells = 0
 
         for _, entity in pairs(nebula.ecs.getEntitiesWith(Icon)) do
             local icon = nebula.ecs.getComponent(entity, Icon)

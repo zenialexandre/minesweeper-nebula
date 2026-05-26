@@ -49,6 +49,7 @@ function grid:reset()
     end
 
     GameObserver.grid_tracker.matrix = {}
+    GameObserver.grid_tracker.available_grid_cells = 81
     GameObserver.grid_tracker.end_game_mine_cell_row_index = 0
     GameObserver.grid_tracker.end_game_mine_cell_column_index = 0
     grid:build()
@@ -88,6 +89,7 @@ function grid:reveal_surrounding_cells(row_index, column_index)
 
         if (cell.is_available) then
             cell.is_available = false
+            GameObserver.grid_tracker.available_grid_cells = GameObserver.grid_tracker.available_grid_cells - 1
 
             if (CellType.BLANK == cell.type) then
                 sprite.texture = BlankCellTexture

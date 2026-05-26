@@ -46,6 +46,7 @@ function nebula.setup()
     nebula.window.setTitle("Minesweeper")
     nebula.window.setSize(475, 600)
     nebula.window.setIcon("resources/textures/icon/yeah_cell.jpg")
+    nebula.graphics.setDefaultFilter("nearest")
 
     Fade = nebula.ecs.component("Fade", { is_active = false })
     Color = nebula.ecs.component("Color")
@@ -54,7 +55,7 @@ function nebula.setup()
     Position = nebula.ecs.component("Position")
     Icon = nebula.ecs.component("Icon", { type = IconType.SMILE, is_pressed = false })
     Timer = nebula.ecs.component("Timer", { count = 0 })
-    CellCounter = nebula.ecs.component("CellCounter", { is_fixed = false, value = GameObserver.grid_tracker.available_grid_cells })
+    CellCounter = nebula.ecs.component("CellCounter", { is_fixed = false, value = 0 })
     Cell = nebula.ecs.component("Cell", { type = CellType.NUMERICAL, is_available = false, row_index = 0, column_index = 0 })
 
     -- Icons
@@ -120,6 +121,7 @@ function nebula.update(delta)
     event:mouse_click()
     event:game_ended()
     timer:lookup(delta)
+    cell_counter:lookup()
 end
 
 function nebula.draw()
