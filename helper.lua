@@ -28,10 +28,11 @@ function helper:enum(input_table)
     return setmetatable(input_table, meta_table)
 end
 
-function helper:reset_entities()
-    for _, entity in nebula.ecs.getEntitiesWith(Cell) do
-        nebula.ecs.despawn(entity)
-    end
+function helper:is_mouse_in_quadrant_of_texture(sprite, position, mouse_x, mouse_y)
+    local quadrant_x = position.x + sprite.texture.width
+    local quadrant_y = position.y + sprite.texture.height
+
+    return mouse_x >= position.x and mouse_x < quadrant_x and mouse_y >= position.y and mouse_y < quadrant_y
 end
 
 return helper
