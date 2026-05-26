@@ -1,7 +1,7 @@
 local grid = {}
 
 function grid:build()
-    local mutable_position = Position({x = 6, y = 10})
+    local mutable_position = Position({ x = 6, y = 110 })
     local number_of_blanks = 0
     local number_of_mines = 0
     local number_of_rows = 9
@@ -27,19 +27,36 @@ function grid:build()
             if (CellType.MINE == cell_type) then number_of_mines = number_of_mines + 1 end
 
             if (j ~= 1) then
-                position = Position({x = mutable_position.x + 56, y = mutable_position.y})
+                position = Position({ x = mutable_position.x + 53, y = mutable_position.y })
                 mutable_position.x = position.x
             end
 
             nebula.ecs.addComponent(
                 cell,
                 position,
-                Sprite({texture = CellTexture}),
-                Color({r = 1.0, g = 1.0, b = 1.0, a = 0.0}),
-                Cell({type = cell_type, is_available = true, row_index = i, column_index = j})
+                Sprite({ texture = CellTexture }),
+                Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
+                Cell({ type = cell_type, is_available = true, row_index = i, column_index = j })
             )
             GameObserver.grid_tracker.matrix[i][j] = cell
         end
+    end
+end
+
+function grid:reset()
+    for _, cell in pairs(nebula.ecs.getEntitiesWith(Cell)) do
+        nebula.ecs.despawn(cell)
+    end
+
+    GameObserver.grid_tracker.matrix = {}
+    GameObserver.grid_tracker.available_grid_cells = 81
+    GameObserver.grid_tracker.end_game_mine_cell_row_index = 0
+    GameObserver.grid_tracker.end_game_mine_cell_column_index = 0
+    grid:build()
+
+    for _, entity in pairs(nebula.ecs.getEntitiesWith(Cell)) do
+        local color = nebula.ecs.getComponent(entity, Color)
+        color.a = 1.0
     end
 end
 
@@ -72,6 +89,7 @@ function grid:reveal_surrounding_cells(row_index, column_index)
 
         if (cell.is_available) then
             cell.is_available = false
+            GameObserver.grid_tracker.available_grid_cells = GameObserver.grid_tracker.available_grid_cells - 1
 
             if (CellType.BLANK == cell.type) then
                 sprite.texture = BlankCellTexture
