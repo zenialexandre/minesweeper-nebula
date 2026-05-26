@@ -53,7 +53,7 @@ function event:mouse_click()
             local sprite = nebula.ecs.getComponent(entity, Sprite)
             local position = nebula.ecs.getComponent(entity, Position)
             local cell = nebula.ecs.getComponent(entity, Cell)
-            local is_mouse_in_quadrant_of_cell = helper:is_mouse_in_quadrant_of_texture(sprite, position, mouse_x,mouse_y)
+            local is_mouse_in_quadrant_of_cell = helper:is_mouse_in_quadrant_of_texture(sprite, position, mouse_x, mouse_y)
 
             if (cell.is_available and is_mouse_in_quadrant_of_cell) then
                 if (nebula.mouse.isPressed("right")) then
