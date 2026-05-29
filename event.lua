@@ -91,6 +91,18 @@ function event:mouse_click()
 
             if (is_mouse_in_quadrant_of_icon) then
                 icon_component.is_pressed = true
+            end
+        end
+    end
+
+    if (nebula.mouse.isReleased("left") and GameObserver.state.running) then
+        for _, entity in pairs(nebula.ecs.getEntitiesWith(Icon)) do
+            local icon_component = nebula.ecs.getComponent(entity, Icon)
+
+            if (icon_component.is_pressed) then
+                icon_component.is_pressed = false
+                icon_component.type = IconType.SMILE
+
                 grid:reset()
                 icon:reset()
                 timer:reset()
@@ -102,13 +114,6 @@ function event:mouse_click()
             end
         end
     end
-
-    --if ((nebula.mouse.isReleased("left") or nebula.mouse.isReleased("right")) and GameObserver.state.running) then
-    --    for _, entity in pairs(nebula.ecs.getEntitiesWith(Icon)) do
-    --        local icon_component = nebula.ecs.getComponent(entity, Icon)
-    --        icon_component.type = IconType.SMILE
-    --    end
-    -- end
 end
 
 function event:game_ended()
