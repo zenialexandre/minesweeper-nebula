@@ -12,7 +12,7 @@ function grid:build()
         mutable_position.x = 6
 
         if (i ~= 1) then
-            mutable_position.y = mutable_position.y + 55
+            mutable_position.y = mutable_position.y + 44
         end
 
         for j = 1, number_of_columns do
@@ -27,7 +27,7 @@ function grid:build()
             if (CellType.MINE == cell_type) then number_of_mines = number_of_mines + 1 end
 
             if (j ~= 1) then
-                position = Position({ x = mutable_position.x + 53, y = mutable_position.y })
+                position = Position({ x = mutable_position.x + 42, y = mutable_position.y })
                 mutable_position.x = position.x
             end
 
@@ -36,7 +36,8 @@ function grid:build()
                 position,
                 Sprite({ texture = CellTexture }),
                 Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
-                Cell({ type = cell_type, is_available = true, row_index = i, column_index = j })
+                Cell({ type = cell_type, is_available = true, row_index = i, column_index = j }),
+                Flag({ is_placed = false })
             )
             GameObserver.grid_tracker.matrix[i][j] = cell
         end
@@ -85,18 +86,19 @@ function grid:reveal_surrounding_cells(row_index, column_index)
 
     for _, entity in pairs(surrounding_cells) do
         local cell = nebula.ecs.getComponent(entity, Cell)
-        local sprite = nebula.ecs.getComponent(entity, Sprite)
 
-        if (cell.is_available) then
+        if (cell.is_available and CellType.MINE ~= cell.type) then
+            local sprite = nebula.ecs.getComponent(entity, Sprite)
+            local flag = nebula.ecs.getComponent(entity, Flag)
+
             cell.is_available = false
+            flag.is_placed = false
             GameObserver.grid_tracker.available_grid_cells = GameObserver.grid_tracker.available_grid_cells - 1
 
             if (CellType.BLANK == cell.type) then
                 sprite.texture = BlankCellTexture
-            elseif (CellType.NUMERICAL == cell.type) then
-                grid:numerical_sprite(sprite, cell.row_index, cell.column_index)
             else
-                sprite.texture = MineCellTexture
+                grid:numerical_sprite(sprite, cell.row_index, cell.column_index)
             end
         end
     end
@@ -114,7 +116,7 @@ function grid:numerical_sprite(cell_sprite, row_index, column_index)
         end
     end
 
-    cell_sprite.texture = NumericalTextures[number_of_surrounding_mines] or BlankCellTexture
+    cell_sprite.texture = NumericalCellTextures[number_of_surrounding_mines] or BlankCellTexture
 end
 
 return grid

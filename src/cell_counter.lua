@@ -6,7 +6,7 @@ function cell_counter:build()
         CellCounter({ is_fixed = true, value = 0 }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = EmptyCellTexture }),
-        Position({ x = 20.0, y = 20.0 }),
+        Position({ x = 40.0, y = 35.0 }),
         Fade({ is_active = false })
     )
 
@@ -15,7 +15,7 @@ function cell_counter:build()
         CellCounter({ is_fixed = false, value = 8 }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = EightCellTexture }),
-        Position({ x = 60.0, y = 20.0 }),
+        Position({ x = 70.0, y = 35.0 }),
         Fade({ is_active = false })
     )
 
@@ -24,7 +24,7 @@ function cell_counter:build()
         CellCounter({ is_fixed = false, value = 1 }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = OneCellTexture }),
-        Position({ x = 100.0, y = 20.0 }),
+        Position({ x = 100.0, y = 35.0 }),
         Fade({ is_active = false })
     )
 end
@@ -65,30 +65,10 @@ end
 function cell_counter:listener()
     for _, entity in pairs(nebula.ecs.getEntitiesWith(CellCounter)) do
         local cell_counter_component = nebula.ecs.getComponent(entity, CellCounter)
-        local sprite = nebula.ecs.getComponent(entity, Sprite)
 
-        if (cell_counter_component.is_fixed == false) then
-            if (cell_counter_component.value == 0) then
-                sprite.texture = ZeroCellTexture
-            elseif (cell_counter_component.value == 1) then
-                sprite.texture = OneCellTexture
-            elseif (cell_counter_component.value == 2) then
-                sprite.texture = TwoCellTexture
-            elseif (cell_counter_component.value == 3) then
-                sprite.texture = ThreeCellTexture
-            elseif (cell_counter_component.value == 4) then
-                sprite.texture = FourCellTexture
-            elseif (cell_counter_component.value == 5) then
-                sprite.texture = FiveCellTexture
-            elseif (cell_counter_component.value == 6) then
-                sprite.texture = SixCellTexture
-            elseif (cell_counter_component.value == 7) then
-                sprite.texture = SevenCellTexture
-            elseif (cell_counter_component.value == 8) then
-                sprite.texture = EightCellTexture
-            elseif (cell_counter_component.value == 9) then
-                sprite.texture = NineCellTexture
-            end
+        if (not cell_counter_component.is_fixed) then
+            local sprite = nebula.ecs.getComponent(entity, Sprite)
+            sprite.texture = NumericalTextures[cell_counter_component.value]
         end
     end
 end

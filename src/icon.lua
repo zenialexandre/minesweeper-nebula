@@ -6,7 +6,7 @@ function icon:build()
         Icon({ type = IconType.SMILE, is_pressed = false }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = SmileCellTexture }),
-        Position({ x = 210.0, y = 20.0 }),
+        Position({ x = 170.0, y = 30.0 }),
         Fade({ is_active = false })
     )
 end
@@ -20,6 +20,8 @@ function icon:listener()
             sprite.texture = SmileCellTexture
         elseif (IconType.SAD == icon_component.type) then
             sprite.texture = SadCellTexture
+        elseif (IconType.YEAH == icon_component.type) then
+            sprite.texture = YeahCellTexture
         else
             sprite.texture = WowCellTexture
         end

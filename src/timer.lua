@@ -6,7 +6,7 @@ function timer:build()
         Timer({ count = 0 }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = ZeroCellTexture }),
-        Position({ x = 350.0, y = 20.0 }),
+        Position({ x = 260.0, y = 35.0 }),
         Fade({ is_active = false })
     )
 
@@ -15,7 +15,7 @@ function timer:build()
         Timer({ count = 0 }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = ZeroCellTexture }),
-        Position({ x = 390.0, y = 20.0 }),
+        Position({ x = 290.0, y = 35.0 }),
         Fade({ is_active = false })
     )
 
@@ -24,7 +24,7 @@ function timer:build()
         Timer({ count = 0 }),
         Color({ r = 1.0, g = 1.0, b = 1.0, a = 0.0 }),
         Sprite({ texture = ZeroCellTexture }),
-        Position({ x = 430.0, y = 20.0 }),
+        Position({ x = 320.0, y = 35.0 }),
         Fade({ is_active = false })
     )
 end
@@ -74,28 +74,7 @@ function timer:listener()
     for _, entity in pairs(nebula.ecs.getEntitiesWith(Timer)) do
         local timer_component = nebula.ecs.getComponent(entity, Timer)
         local sprite = nebula.ecs.getComponent(entity, Sprite)
-
-        if (timer_component.count == 0) then
-            sprite.texture = ZeroCellTexture
-        elseif (timer_component.count == 1) then
-            sprite.texture = OneCellTexture
-        elseif (timer_component.count == 2) then
-            sprite.texture = TwoCellTexture
-        elseif (timer_component.count == 3) then
-            sprite.texture = ThreeCellTexture
-        elseif (timer_component.count == 4) then
-            sprite.texture = FourCellTexture
-        elseif (timer_component.count == 5) then
-            sprite.texture = FiveCellTexture
-        elseif (timer_component.count == 6) then
-            sprite.texture = SixCellTexture
-        elseif (timer_component.count == 7) then
-            sprite.texture = SevenCellTexture
-        elseif (timer_component.count == 8) then
-            sprite.texture = EightCellTexture
-        elseif (timer_component.count == 9) then
-            sprite.texture = NineCellTexture
-        end
+        sprite.texture = NumericalTextures[timer_component.count]
     end
 end
 
