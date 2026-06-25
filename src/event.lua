@@ -155,6 +155,8 @@ function event:game_ended()
             local cell = nebula.ecs.getComponent(entity, Cell)
             local sprite = nebula.ecs.getComponent(entity, Sprite)
 
+            cell.is_available = false
+
             if (CellType.BLANK == cell.type) then
                 sprite.texture = BlankCellTexture
             elseif (CellType.NUMERICAL == cell.type) then
