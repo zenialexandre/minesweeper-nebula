@@ -70,10 +70,10 @@ function grid:get_surrounding_cells(row_index, column_index)
     }
 
     for _, direction in ipairs(directions) do
-        local i = row_index + direction[1] -- Index starts at 1
+        local i = row_index + direction[1]
         local j = column_index + direction[2]
 
-        if (GameObserver.grid_tracker.matrix[i] and GameObserver.grid_tracker.matrix[i][j]) then -- Preventing nil rows and columns
+        if (GameObserver.grid_tracker.matrix[i] and GameObserver.grid_tracker.matrix[i][j]) then
             table.insert(surrounding_cells, GameObserver.grid_tracker.matrix[i][j])
         end
     end
